@@ -1,0 +1,75 @@
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: default
+  name: traefikv2-ingress
+  labels:
+    app: traefikv2-ingress
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: traefikv2-ingress
+  template:
+    metadata:
+      labels:
+        app: traefikv2-ingress
+    spec:
+      serviceAccountName: traefik-ingress-controller
+      containers:
+        - name: traefikv2-ingress
+          image: traefik:v2.2
+          args:
+            - --api.insecure
+            - --accesslog
+            - --entrypoints.web.Address=:80
+            - --entrypoints.websecure.Address=:443
+            - --entrypoints.metrics.address=:8888
+            - --providers.kubernetescrd
+            - --entryPoints.websecure.http.tls=true
+            - --providers.kubernetesIngress=true
+            - --metrics.prometheus=true
+            - --metrics.prometheus.entryPoint=metrics
+            - --tracing.zipkin=true
+            - --tracing.zipkin.httpEndpoint=http://zipkin:9411/api/v2/spans
+            - --tracing.zipkin.sameSpan=true
+            - --tracing.zipkin.id128Bit=false
+            - --tracing.zipkin.sampleRate=0.2
+          ports:
+            - name: web
+              containerPort: 80
+            - name: websecure
+              containerPort: 443
+            - name: admin
+              containerPort: 8080
+            - name: metrics
+              containerPort: 8888
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: default
+  name: whoami
+  labels:
+    app: whoami
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: whoami
+  template:
+    metadata:
+      labels:
+        app: whoami
+    spec:
+      containers:
+        - name: whoami
+          image: containous/whoami
+          ports:
+            - name: web
+              containerPort: 80

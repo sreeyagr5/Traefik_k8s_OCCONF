@@ -1,0 +1,47 @@
+# This will redirect all http to https and used the websecure entrypoint
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: catchallredirect
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: HostRegexp(`{host:.+}`)
+      middlewares:
+        - name: redirecthttps
+      kind: Rule
+      services:
+        - name: whoami # never makes it here
+          port: 80
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ingressroutetls
+  namespace: default
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: HostRegexp(`{host:^traefikui.*$}`) && PathPrefix(`/`)
+      middlewares:
+        - name: admin-basic
+      kind: Rule
+      services:
+        - name: traefik-admin-ui
+          port: 8080
+    - match: HostRegexp(`{host:^whoami-demo.*$}`) && PathPrefix(`/`) # same as Host(`whoami-demo.pressler.com`,`whoami-demo`,`whoami-demo.local`)
+      kind: Rule
+      services:
+        - name: whoami
+          port: 80
+    - match: Host(`testk8s.local`) && PathPrefix(`/`)
+      kind: Rule
+      services:
+        - name: whoami
+          port: 80
+  tls:
+    certResolver: default
