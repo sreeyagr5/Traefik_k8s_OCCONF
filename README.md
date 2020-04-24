@@ -3,7 +3,8 @@ This has been tested on docker on desktop and can be used and deploy via LoadBal
 
 Deploy Traefik
 
-The code has 2 scripts , init.sh - initilize lb and setup CRD,RBAC and ClusterRole and Binding.
+init.sh - initilize lb and setup CRD,RBAC and ClusterRole and Binding.
+install.sh - deployement , set up ingress and rest   
 
 Namespace - For logical separation
 ServiceAccount - For api access
@@ -27,4 +28,4 @@ kubectl apply -f deployment.yaml
 kubectl apply -f traefik-middlewares.yaml
 kubectl apply -f traefik-ingressroutes.yaml
 ```
-# now you can goto localhost and see the traefik admin interface
+Now you can goto localhost and see the traefik admin interface
