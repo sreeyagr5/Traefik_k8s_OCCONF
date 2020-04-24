@@ -11,6 +11,7 @@ kubectl  $1 delete -f traefik-middlewares.yaml
 kubectl  $1 delete -f service.yaml
 kubectl  $1 delete -f deployment.yaml
 kubectl  $1 delete -f load-balancer.yaml
+kubectl  $1 delete -f canary/
 kubectl  $1 delete -f prereqs.yaml
 
 kubectl  $1 get nodes
