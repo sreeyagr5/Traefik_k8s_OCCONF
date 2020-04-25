@@ -33,7 +33,7 @@ spec:
       services:
         - name: traefik-admin-ui
           port: 8080
-    - match: HostRegexp(`{host:^whoami-demo.*$}`) && PathPrefix(`/`) # same as Host(`whoami-demo.pressler.com`,`whoami-demo`,`whoami-demo.local`)
+    - match: HostRegexp(`{host:^whoami-demo.*$}`) && PathPrefix(`/`)
       kind: Rule
       services:
         - name: whoami
